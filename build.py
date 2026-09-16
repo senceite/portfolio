@@ -372,11 +372,11 @@ def whatsapp_cta(size: str = "sm") -> str:
               f"tracking-tight {pad}")
     number = SITE["whatsapp"].strip()
     if not number:
-        return (f'<span class="{common} cursor-not-allowed bg-white/10 text-lavender" '
+        return (f'<span class="{common} cursor-not-allowed bg-neutral-200 text-neutral-500" '
                 f'aria-disabled="true" title="Falta o número do WhatsApp">{inner}</span>')
     url = f"https://wa.me/{number}?text={quote(SITE['whatsapp_message'])}"
-    return (f'<a href="{url}" class="{common} bg-yellow text-deep transition-colors '
-            f'hover:bg-white focus-ring" target="_blank" rel="noopener">{inner}</a>')
+    return (f'<a href="{url}" class="{common} bg-graphite text-white transition-colors '
+            f'hover:bg-neutral-700 focus-ring" target="_blank" rel="noopener">{inner}</a>')
 
 
 def header(depth: int, current: str = "", overlay: bool = False) -> str:
@@ -412,18 +412,13 @@ Rascunho interno. {E(note)}</p>
 
 def footer(depth: int, scripts: str = "") -> str:
     base = "../" if depth else ""
-    return f"""<footer id="contato" class="bg-graphite text-white">
-  <div class="mx-auto flex max-w-[956px] flex-wrap items-baseline justify-between gap-x-10 gap-y-4 px-6 py-12">
-    <div>
-      <h2 class="text-xs font-bold uppercase tracking-[0.18em] text-yellow">Contato</h2>
-      <p class="mt-3 max-w-md text-sm leading-relaxed text-neutral-300">{E(SITE['availability'])}</p>
-    </div>
-    <dl class="text-sm">
-      <div class="flex gap-3"><dt class="w-20 shrink-0 text-neutral-400">Telefone</dt><dd>{E(SITE['phone'])}</dd></div>
-      <div class="mt-2 flex gap-3"><dt class="w-20 shrink-0 text-neutral-400">E-mail</dt><dd>{E(SITE['email'])}</dd></div>
-    </dl>
-  </div>
-  <p class="mx-auto max-w-[956px] px-6 pb-10 text-xs text-neutral-500">© 2026 {E(SITE['name'])}. <a href="{base}index.html" class="underline underline-offset-4">Início</a></p>
+    return f"""<footer class="bg-graphite text-white">
+  <nav aria-label="Rodapé" class="mx-auto flex max-w-[956px] flex-wrap items-center justify-center gap-x-8 gap-y-2 px-6 pt-10">
+    <a href="{base}index.html" class="menu-link">Portfólio</a>
+    <a href="{base}sobre.html" class="menu-link">Sobre</a>
+    <a href="{base}contato.html" class="menu-link">Contato</a>
+  </nav>
+  <p class="mx-auto max-w-[956px] px-6 py-8 text-center text-xs text-neutral-500">© 2026 {E(SITE['name'])}</p>
 </footer>
 {zap_flutuante()}{scripts}</body>
 </html>
@@ -546,8 +541,8 @@ def barra_menu(depth: int, atual: str = "portfolio") -> str:
     Kaz pediu no topo."""
     base = "../" if depth else ""
     itens = [("portfolio", "Portfólio", f"{base}index.html"),
-             ("sobre", "Sobre", f"{base}index.html#sobre"),
-             ("contato", "Contato", f"{base}index.html#contato")]
+             ("sobre", "Sobre", f"{base}sobre.html"),
+             ("contato", "Contato", f"{base}contato.html")]
     links = "".join(
         f'<a href="{href}" class="menu-link"'
         f'{chr(32) + chr(97) + "ria-current=" + chr(34) + "page" + chr(34) if chave == atual else ""}>{E(rotulo)}</a>'
@@ -587,22 +582,6 @@ def index_page() -> str:
        class="w-full transition-opacity duration-200 group-hover:opacity-85 motion-reduce:transition-none">
 </a>""")
 
-    tools = ("Photoshop, Illustrator, InDesign, Premiere e Dreamweaver, Figma, Canva, "
-             "Trello, Miro e o pacote Office.")
-    jobs = [
-        ("Designer gráfica", "Fundação Roberto Marinho", "04/22 – 12/24"),
-        ("Estagiária", "Fundação Roberto Marinho", "06/21 – 04/22"),
-        ("Designer gráfica", "Milam Studio", "07/20 – 07/21"),
-        ("Designer gráfica", "Museu Espaço Ciência Viva", "04/16 – 04/17"),
-        ("Designer gráfica", "Museu Espaço Ciência Viva", "03/14 – 10/14"),
-    ]
-    jobs_html = "".join(
-        f'<li class="flex flex-wrap justify-between gap-x-6 gap-y-1 border-b border-neutral-200 py-3">'
-        f'<span class="font-bold">{E(cargo)}</span>'
-        f'<span class="text-neutral-500">{E(org)} · {E(periodo)}</span></li>'
-        for cargo, org, periodo in jobs
-    )
-
     return (
         head(f"{SITE['name']} — {SITE['role']}", SITE["lede"], "#2A2A2A", depth=0,
              body_class="bg-canvas text-graphite")
@@ -611,7 +590,7 @@ def index_page() -> str:
         + f"""<main id="conteudo">
   <section class="mx-auto max-w-[956px] px-6 pt-16 pb-12 text-center">
     <h1 class="text-2xl font-bold uppercase tracking-[0.2em] md:text-[26px]">{E(SITE['name'])}</h1>
-    <p class="mt-4 text-base font-light uppercase tracking-[0.18em] text-neutral-600 md:text-lg">Portfólio de designer gráfica</p>
+    <p class="mt-4 text-base font-light uppercase tracking-[0.18em] text-neutral-600 md:text-lg">Designer gráfica</p>
   </section>
 
   <section id="projetos" class="mx-auto max-w-[956px] px-6 pb-16">
@@ -621,15 +600,79 @@ def index_page() -> str:
     </div>
   </section>
 
-  <section id="sobre" class="mx-auto max-w-[956px] px-6 pb-20">
-    <h2 class="text-xs font-bold uppercase tracking-[0.18em] text-neutral-500">Sobre</h2>
-    <p class="mt-5 max-w-[680px] text-lg leading-relaxed">Bacharela em Comunicação Visual Design pela UFRJ. Trabalho com
-    identidade visual, design editorial e comunicação institucional, com passagem por projetos de marca para
-    clientes e por campanhas da Fundação Roberto Marinho. Também atendo como freelancer desde 2019, e preparo
-    arquivo para impressão e fechamento gráfico.</p>
-    <p class="mt-4 text-sm text-neutral-600">{E(tools)}</p>
-    <ul class="mt-8 text-sm">{jobs_html}</ul>
+</main>
+"""
+        + footer(depth=0)
+    )
+
+
+def sobre_page() -> str:
+    """Segue o layout da página Sobre da referência: nome centralizado, retrato à
+    esquerda, texto à direita, botão de currículo. O Contato repete a estrutura de
+    duas colunas da página de contato do template. Lá o lado direito é um formulário,
+    que num site estático não teria para onde enviar; no lugar vão os canais reais."""
+    w, h = size_of("sobre", "retrato")
+    tools = ("Photoshop, Illustrator, InDesign, Premiere e Dreamweaver, Figma, Canva, "
+             "Trello, Miro e o pacote Office.")
+    return (
+        head(f"Sobre — {SITE['name']}", SITE["lede"], "#2A2A2A", depth=0,
+             body_class="bg-canvas text-graphite")
+        + draft_banner(_pending())
+        + barra_menu(depth=0, atual="sobre")
+        + f"""<main id="conteudo" class="mx-auto max-w-[956px] px-6 pb-24">
+  <p class="pt-16 pb-14 text-center text-2xl font-bold uppercase tracking-[0.2em] md:text-[26px]">{E(SITE['name'])}</p>
+
+  <section class="grid gap-10 md:grid-cols-[minmax(0,476px)_minmax(0,1fr)] md:gap-14">
+    <img src="assets/img/sobre/retrato.webp" srcset="assets/img/sobre/retrato@sm.webp 600w, assets/img/sobre/retrato.webp 1200w"
+         sizes="(min-width: 768px) 476px, 92vw" width="{w}" height="{h}"
+         alt="Retrato de {E(SITE['name'])}" decoding="async" class="w-full">
+    <div>
+      <h1 class="text-base font-normal uppercase tracking-[0.2em]">Sobre</h1>
+      <p class="mt-8 leading-relaxed">Bacharela em Comunicação Visual Design pela UFRJ, com sete anos de
+      trabalho em identidade visual, design editorial e comunicação institucional. Passei por projetos de
+      marca para clientes e por campanhas da Fundação Roberto Marinho, onde desdobrei identidade em peças
+      institucionais para Aprendiz Legal, Futura, Telecurso e co.liga.</p>
+      <p class="mt-5 leading-relaxed">Atendo como freelancer desde 2019. Trabalho com grid, tipografia e
+      sistemas que precisam funcionar em formatos diferentes, e preparo arquivo para impressão e fechamento
+      gráfico.</p>
+      <p class="mt-5 text-sm text-neutral-600">{E(tools)}</p>
+      <a href="assets/curriculo-rafaela-senceite.pdf" target="_blank" rel="noopener"
+         class="mt-8 inline-flex min-h-11 items-center bg-graphite px-7 text-sm text-white transition-colors hover:bg-neutral-700 focus-ring">Currículo</a>
+    </div>
   </section>
+
+</main>
+"""
+        + footer(depth=0)
+    )
+
+
+def contato_page() -> str:
+    """Duas colunas como a página de contato da referência. Lá a coluna direita é um
+    formulário; num site estático ele não teria para onde enviar, então ficam os
+    canais que funcionam de verdade."""
+    return (
+        head(f"Contato — {SITE['name']}", SITE["availability"], "#2A2A2A", depth=0,
+             body_class="bg-canvas text-graphite")
+        + draft_banner(_pending())
+        + barra_menu(depth=0, atual="contato")
+        + f"""<main id="conteudo" class="mx-auto max-w-[956px] px-6 pb-32">
+  <p class="pt-16 pb-14 text-center text-2xl font-bold uppercase tracking-[0.2em] md:text-[26px]">{E(SITE['name'])}</p>
+
+  <div class="grid gap-10 md:grid-cols-[minmax(0,476px)_minmax(0,1fr)] md:gap-14">
+    <div>
+      <h1 class="text-base font-normal uppercase tracking-[0.2em]">Contato</h1>
+      <dl class="mt-8 leading-relaxed">
+        <div><dt class="sr-only">E-mail</dt><dd><a href="mailto:{E(SITE['email'])}" class="underline underline-offset-4">{E(SITE['email'])}</a></dd></div>
+        <div class="mt-1"><dt class="sr-only">Telefone</dt><dd>Tel: {E(SITE['phone'])}</dd></div>
+      </dl>
+    </div>
+    <div>
+      <p class="max-w-[520px] text-lg leading-relaxed">{E(SITE['availability'])}</p>
+      <div class="mt-9">{whatsapp_cta('lg')}</div>
+      <p class="mt-4 text-sm text-neutral-500">Respondo mais rápido pelo WhatsApp.</p>
+    </div>
+  </div>
 </main>
 """
         + footer(depth=0)
@@ -639,7 +682,9 @@ def index_page() -> str:
 def main() -> None:
     (ROOT / "cases").mkdir(exist_ok=True)
     (ROOT / "index.html").write_text(index_page(), encoding="utf-8")
-    written = ["index.html"]
+    (ROOT / "sobre.html").write_text(sobre_page(), encoding="utf-8")
+    (ROOT / "contato.html").write_text(contato_page(), encoding="utf-8")
+    written = ["index.html", "sobre.html", "contato.html"]
     for i, case in enumerate(CASES):
         prev, nxt = CASES[i - 1], CASES[(i + 1) % len(CASES)]
         (ROOT / "cases" / f"{case['slug']}.html").write_text(case_page(case, prev, nxt), encoding="utf-8")
