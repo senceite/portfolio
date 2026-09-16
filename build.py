@@ -13,7 +13,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 ROOT = Path(__file__).parent
-DRAFT = True  # flip to False once Rafaela signs off on the texts
+DRAFT = False  # tarja de rascunho e noindex; Kaz liberou em 2026-09-16
 
 SITE = {
     "name": "Rafaela Senceite",
