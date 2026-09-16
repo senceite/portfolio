@@ -69,6 +69,7 @@ def _pending() -> str:
 CASES = [
     {
         "slug": "urbo",
+        "vitrine": ['papelaria', 'sacola'],
         "title": "Urbo Gastrobar",
         "area": "Identidade visual",
         "year": "2020",
@@ -116,6 +117,7 @@ CASES = [
     },
     {
         "slug": "reconhecer",
+        "vitrine": ['abertura', 'ife'],
         "title": "Reconhecer e Reparar",
         "area": "Comunicação institucional",
         "year": "2022",
@@ -158,6 +160,7 @@ CASES = [
     },
     {
         "slug": "multiplo",
+        "vitrine": ['capa-aberta', 'cronologia'],
         "title": "Múltiplo",
         "area": "Editorial",
         "year": "2021",
@@ -203,6 +206,7 @@ CASES = [
     },
     {
         "slug": "n1pt",
+        "vitrine": ['abertura', 'carrossel'],
         "title": "Nem 1 Pra Trás",
         "area": "Campanha institucional",
         "year": "2024",
@@ -247,6 +251,7 @@ CASES = [
     },
     {
         "slug": "aruanda",
+        "vitrine": ['capa', 'viola-davis'],
         "title": "Revista Aruanda",
         "area": "Editorial",
         "year": "2021",
@@ -289,6 +294,7 @@ CASES = [
     },
     {
         "slug": "budapeste",
+        "vitrine": ['capa', 'miolo'],
         "title": "Budapeste",
         "area": "Editorial",
         "year": "2021",
@@ -406,22 +412,20 @@ Rascunho interno. {E(note)}</p>
 
 def footer(depth: int, scripts: str = "") -> str:
     base = "../" if depth else ""
-    return f"""<footer id="contato" class="on-brand mt-24 border-t border-white/15 py-16">
-  <div class="wrap grid gap-10 md:grid-cols-2">
+    return f"""<footer id="contato" class="bg-graphite text-white">
+  <div class="mx-auto flex max-w-[956px] flex-wrap items-baseline justify-between gap-x-10 gap-y-4 px-6 py-12">
     <div>
-      <h2 class="text-3xl font-black tracking-tight text-yellow">Contato</h2>
-      <p class="mt-3 max-w-md">Aberta a vagas e a projetos pontuais. Uma conversa rápida já dá para entender se faz sentido.</p>
-      <div class="mt-6">{whatsapp_cta('lg')}</div>
+      <h2 class="text-xs font-bold uppercase tracking-[0.18em] text-yellow">Contato</h2>
+      <p class="mt-3 max-w-md text-sm leading-relaxed text-neutral-300">{E(SITE['availability'])}</p>
     </div>
-    <dl class="grid gap-4 self-end text-sm">
-      <div class="flex gap-3"><dt class="w-24 shrink-0 text-aqua">Nome</dt><dd class="text-white">{E(SITE['name'])}</dd></div>
-      <div class="flex gap-3"><dt class="w-24 shrink-0 text-aqua">Telefone</dt><dd class="text-white">{E(SITE['phone'])}</dd></div>
-      <div class="flex gap-3"><dt class="w-24 shrink-0 text-aqua">E-mail</dt><dd class="text-white">{E(SITE['email'])}</dd></div>
+    <dl class="text-sm">
+      <div class="flex gap-3"><dt class="w-20 shrink-0 text-neutral-400">Telefone</dt><dd>{E(SITE['phone'])}</dd></div>
+      <div class="mt-2 flex gap-3"><dt class="w-20 shrink-0 text-neutral-400">E-mail</dt><dd>{E(SITE['email'])}</dd></div>
     </dl>
   </div>
-  <p class="wrap mt-12 text-xs">© 2026 {E(SITE['name'])}. <a href="{base}index.html" class="link">Início</a></p>
+  <p class="mx-auto max-w-[956px] px-6 pb-10 text-xs text-neutral-500">© 2026 {E(SITE['name'])}. <a href="{base}index.html" class="underline underline-offset-4">Início</a></p>
 </footer>
-{scripts}</body>
+{zap_flutuante()}{scripts}</body>
 </html>
 """
 
@@ -488,7 +492,7 @@ def case_page(case: dict, prev: dict, nxt: dict) -> str:
         head(f"{case['title']} — {SITE['name']}", case["summary"], case["color"], depth=1,
              body_class="bg-paper text-ink")
         + draft_banner("Os créditos e a divisão de autoria ainda dependem de confirmação da Rafaela.")
-        + header(depth=1, current="projetos")
+        + barra_menu(depth=1)
         + f"""<main id="conteudo">
   <article>
     <div class="rule" aria-hidden="true"></div>
@@ -537,106 +541,98 @@ def case_page(case: dict, prev: dict, nxt: dict) -> str:
     )
 
 
+def barra_menu(depth: int, atual: str = "portfolio") -> str:
+    """Menu no topo, em barra escura, como a referência faz no rodapé.
+    Kaz pediu no topo."""
+    base = "../" if depth else ""
+    itens = [("portfolio", "Portfólio", f"{base}index.html"),
+             ("sobre", "Sobre", f"{base}index.html#sobre"),
+             ("contato", "Contato", f"{base}index.html#contato")]
+    links = "".join(
+        f'<a href="{href}" class="menu-link"'
+        f'{chr(32) + chr(97) + "ria-current=" + chr(34) + "page" + chr(34) if chave == atual else ""}>{E(rotulo)}</a>'
+        for chave, rotulo, href in itens
+    )
+    return f"""<header class="bg-graphite">
+  <nav aria-label="Principal" class="mx-auto flex max-w-[956px] flex-wrap items-center justify-center gap-x-8 gap-y-2 px-6 py-4">
+    {links}
+  </nav>
+</header>
+"""
+
+
+def zap_flutuante() -> str:
+    numero = SITE["whatsapp"].strip()
+    if not numero:
+        return ""
+    url = f"https://wa.me/{numero}?text={quote(SITE['whatsapp_message'])}"
+    return f"""<a href="{url}" class="zap" target="_blank" rel="noopener" aria-label="Conversar no WhatsApp">
+  <svg viewBox="0 0 24 24" class="size-7" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.97L2 22l5.25-1.38a9.87 9.87 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.13h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.17 8.17 0 0 1-1.26-4.36c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.21-8.24 8.21Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.09-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.22.25-.87.85-.87 2.07 0 1.22.89 2.4 1.02 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.08.15-1.18-.06-.11-.22-.17-.47-.29Z"/></svg>
+</a>
+"""
+
+
 def index_page() -> str:
-    cards = []
-    for i, case in enumerate(CASES, 1):
-        cover, alt = case["images"][0]
-        src = f"assets/img/{case['slug']}/{cover}"
-        w, h = size_of(case["slug"], cover)
-        cards.append(f"""<li>
-  <a href="cases/{case['slug']}.html" class="group block focus-ring">
-    <div class="aspect-[4/3] overflow-hidden rounded-sm" style="background:{case['color']}">
-      <img src="{src}@sm.webp" srcset="{src}@sm.webp 800w, {src}.webp 1600w"
-           sizes="(min-width: 768px) 46vw, 92vw" alt="{E(alt)}" width="{w}" height="{h}"
-           loading="{'eager' if i <= 2 else 'lazy'}" decoding="async"
-           class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100">
-    </div>
-    <div class="mt-4 flex items-baseline gap-3">
-      <span class="text-xs tabular-nums text-aqua">{i:02d}</span>
-      <h3 class="text-2xl font-black tracking-tight text-white group-hover:underline">{E(case['title'])}</h3>
-    </div>
-    <p class="mt-1 text-sm text-aqua">{E(case['area'])} · {E(case['year'])} · {E(case['client'])}</p>
-    <p class="mt-3 max-w-prose text-lavender">{E(case['summary'])}</p>
-  </a>
-</li>""")
+    pecas = []
+    for case in CASES:
+        legendas = dict(case["images"])
+        for nome in case["vitrine"]:
+            capa, alt = nome, legendas[nome]
+            src = f"assets/img/{case['slug']}/{capa}"
+            w, h = size_of(case["slug"], capa)
+            pecas.append(f"""<a href="cases/{case['slug']}.html" class="group block focus-ring" aria-label="{E(case['title'])}">
+  <img src="{src}@sm.webp" srcset="{src}@sm.webp 800w, {src}.webp 1600w"
+       sizes="(min-width: 900px) 312px, (min-width: 640px) 46vw, 92vw" alt="{E(alt)}"
+       width="{w}" height="{h}" loading="lazy" decoding="async"
+       class="w-full transition-opacity duration-200 group-hover:opacity-85 motion-reduce:transition-none">
+</a>""")
 
     tools = ("Photoshop, Illustrator, InDesign, Premiere e Dreamweaver, Figma, Canva, "
              "Trello, Miro e o pacote Office.")
     jobs = [
-        ("Designer gráfica", "Fundação Roberto Marinho", "04/22 – 12/24",
-         "Criação e desdobramento de artes para peças institucionais e promocionais das marcas FRM: "
-         "Aprendiz Legal, Futura, Telecurso e co.liga."),
-        ("Estagiária", "Fundação Roberto Marinho", "06/21 – 04/22",
-         "Desdobramento de identidade visual em peças institucionais, campanhas de comunicação interna e "
-         "divulgação da programação do Futura."),
-        ("Designer gráfica", "Milam Studio", "07/20 – 07/21",
-         "Desenvolvimento experimental de identidade visual, ícones e signos tridimensionais, fluidos e "
-         "parametrizados."),
-        ("Designer gráfica", "Museu Espaço Ciência Viva", "04/16 – 04/17",
-         "Design e ilustração de folderes e pôsteres para divulgação de eventos."),
-        ("Designer gráfica", "Museu Espaço Ciência Viva", "03/14 – 10/14",
-         "Desenvolvimento e ilustração do jogo educativo “Os Vingadores da Saúde”."),
+        ("Designer gráfica", "Fundação Roberto Marinho", "04/22 – 12/24"),
+        ("Estagiária", "Fundação Roberto Marinho", "06/21 – 04/22"),
+        ("Designer gráfica", "Milam Studio", "07/20 – 07/21"),
+        ("Designer gráfica", "Museu Espaço Ciência Viva", "04/16 – 04/17"),
+        ("Designer gráfica", "Museu Espaço Ciência Viva", "03/14 – 10/14"),
     ]
-    jobs_html = "".join(f"""<li class="grid gap-1 border-t border-white/15 py-5 md:grid-cols-[1fr_2fr]">
-  <div>
-    <p class="font-bold text-white">{E(role)}</p>
-    <p class="text-sm text-lavender">{E(org)} · {E(period)}</p>
-  </div>
-  <p class="text-lavender">{E(desc)}</p>
-</li>""" for role, org, period, desc in jobs)
+    jobs_html = "".join(
+        f'<li class="flex flex-wrap justify-between gap-x-6 gap-y-1 border-b border-neutral-200 py-3">'
+        f'<span class="font-bold">{E(cargo)}</span>'
+        f'<span class="text-neutral-500">{E(org)} · {E(periodo)}</span></li>'
+        for cargo, org, periodo in jobs
+    )
 
     return (
-        head(f"{SITE['name']} — {SITE['role']}", SITE["lede"], "#EB0F89", depth=0,
-             body_class="on-brand")
+        head(f"{SITE['name']} — {SITE['role']}", SITE["lede"], "#2A2A2A", depth=0,
+             body_class="bg-canvas text-graphite")
         + draft_banner(_pending())
-        + header(depth=0, overlay=True)
+        + barra_menu(depth=0)
         + f"""<main id="conteudo">
-  <section class="brand-gradient">
-    <div class="wrap grid gap-10 pt-20 pb-24 md:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)] md:gap-14 md:pt-28 md:pb-32">
-      <div>
-        <h1 class="text-display font-black leading-[0.92] tracking-tight text-yellow">{E(SITE['name'])}</h1>
-        <p class="mt-6 text-2xl font-light text-aqua">{E(SITE['role'])}</p>
-        <p class="mt-8 max-w-2xl text-lg leading-relaxed">{E(SITE['lede'])}</p>
-      </div>
-      <div class="self-end border-t border-white/25 pt-8 md:border-t-0 md:border-l md:pt-0 md:pl-14">
-        <h2 class="label">Contato</h2>
-        <p class="mt-5 text-lg leading-relaxed">{E(SITE['availability'])}</p>
-        <div class="mt-7">{whatsapp_cta('lg')}</div>
-      </div>
-    </div>
-    <div id="fim-do-hero" aria-hidden="true"></div>
+  <section class="mx-auto max-w-[956px] px-6 pt-16 pb-12 text-center">
+    <h1 class="text-2xl font-bold uppercase tracking-[0.2em] md:text-[26px]">{E(SITE['name'])}</h1>
+    <p class="mt-4 text-base font-light uppercase tracking-[0.18em] text-neutral-600 md:text-lg">Portfólio de designer gráfica</p>
   </section>
 
-  <section id="projetos" class="wrap pt-20">
-    <h2 class="label">Projetos</h2>
-    <ul class="mt-10 grid gap-x-8 gap-y-16 md:grid-cols-2">
-      {"".join(cards)}
-    </ul>
+  <section id="projetos" class="mx-auto max-w-[956px] px-6 pb-16">
+    <h2 class="sr-only">Projetos</h2>
+    <div class="vitrine">
+      {"".join(pecas)}
+    </div>
   </section>
 
-  <section id="sobre" class="wrap mt-24 border-t border-white/15 pt-16 pb-8">
-    <h2 class="label">Sobre</h2>
-    <div class="mt-8 grid gap-10 md:grid-cols-2">
-      <div>
-        <p class="prose-p">Bacharela em Comunicação Visual Design pela UFRJ. Trabalho com identidade visual,
-        design editorial e comunicação institucional, com passagem por projetos de marca para clientes e por
-        campanhas da Fundação Roberto Marinho.</p>
-        <p class="prose-p">Também atendo como freelancer desde 2019, e preparo arquivo para impressão e
-        fechamento gráfico.</p>
-      </div>
-      <div>
-        <h3 class="text-xs uppercase tracking-[0.14em] text-aqua">Ferramentas</h3>
-        <p class="mt-2">{E(tools)}</p>
-        <h3 class="mt-8 text-xs uppercase tracking-[0.14em] text-aqua">Formação</h3>
-        <p class="mt-2">Bacharelado em Comunicação Visual Design, UFRJ, 2019 – 2023.</p>
-      </div>
-    </div>
-    <h3 class="mt-16 text-xs uppercase tracking-[0.14em] text-aqua">Experiência</h3>
-    <ul class="mt-4">{jobs_html}</ul>
+  <section id="sobre" class="mx-auto max-w-[956px] px-6 pb-20">
+    <h2 class="text-xs font-bold uppercase tracking-[0.18em] text-neutral-500">Sobre</h2>
+    <p class="mt-5 max-w-[680px] text-lg leading-relaxed">Bacharela em Comunicação Visual Design pela UFRJ. Trabalho com
+    identidade visual, design editorial e comunicação institucional, com passagem por projetos de marca para
+    clientes e por campanhas da Fundação Roberto Marinho. Também atendo como freelancer desde 2019, e preparo
+    arquivo para impressão e fechamento gráfico.</p>
+    <p class="mt-4 text-sm text-neutral-600">{E(tools)}</p>
+    <ul class="mt-8 text-sm">{jobs_html}</ul>
   </section>
 </main>
 """
-        + footer(depth=0, scripts=HEADER_REVEAL)
+        + footer(depth=0)
     )
 
 

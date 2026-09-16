@@ -18,6 +18,11 @@
   --color-aqua: #66cbbc;
   --color-lavender: #c5bbe0;
 
+  /* Amostrado dos screenshots do template Wix que ela mandou como referência.
+     Os tokens JSON do extrator vieram com o CSS do editor Wix, não do template. */
+  --color-canvas: #ffffff;
+  --color-graphite: #2a2a2a;
+
   --text-display: clamp(2.75rem, 7vw, 5.5rem);
 }
 
@@ -148,6 +153,58 @@
   /* Não dá para redefinir text-muted ou border-line aqui: no Tailwind v4 a
      camada utilities vence a camada components, independente de especificidade.
      Dentro de .on-brand o HTML usa text-lavender e border-white/15 direto. */
+
+  /* Vitrine. A referência põe três colunas de 312px com 10px de calha num container
+     de 956px. `columns` dá o masonry sem JS; a contrapartida é que a leitura corre
+     por coluna, não por linha, o que numa galeria não muda nada. */
+  .vitrine {
+    column-count: 1;
+    column-gap: 10px;
+  }
+
+  @media (min-width: 640px) {
+    .vitrine {
+      column-count: 2;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .vitrine {
+      column-count: 3;
+    }
+  }
+
+  .vitrine > * {
+    break-inside: avoid;
+    margin-bottom: 10px;
+  }
+
+  .menu-link {
+    @apply text-xs font-bold uppercase tracking-[0.14em] text-white transition-colors;
+  }
+
+  .menu-link:hover,
+  .menu-link[aria-current="page"] {
+    color: var(--color-yellow);
+  }
+
+  .zap {
+    @apply fixed bottom-6 right-6 z-50 inline-flex size-14 items-center justify-center rounded-full text-white shadow-lg transition-transform;
+    background: #25d366;
+  }
+
+  .zap:hover {
+    transform: scale(1.06);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .zap {
+      transition: none;
+    }
+    .zap:hover {
+      transform: none;
+    }
+  }
 
   /* Na home o cabeçalho fica fora da tela enquanto o hero ocupa o campo de visão.
      Quem esconde é o JS, então sem JS ele simplesmente continua visível.
