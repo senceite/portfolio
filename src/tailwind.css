@@ -1,0 +1,187 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Lato", ui-sans-serif, system-ui, sans-serif;
+
+  --color-paper: #fafaf9;
+  --color-ink: #0b0b0c;
+  --color-muted: #5b5b60;
+  --color-line: #e4e4e2;
+  --color-shade: #efefed;
+
+  /* Amostrado do currículo dela, não escolhido de olho.
+     A lavanda do PDF (#9788BA) dá 4,40:1 sobre o roxo, então subiu para #C5BBE0. */
+  --color-deep: #312254;
+  --color-magenta: #eb0f89;
+  --color-plum: #b5309b;
+  --color-yellow: #e9c615;
+  --color-aqua: #66cbbc;
+  --color-lavender: #c5bbe0;
+
+  --text-display: clamp(2.75rem, 7vw, 5.5rem);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* O cabeçalho é fixo: sem isso ele cobre o elemento que acabou de receber foco. */
+    scroll-padding-top: 5.5rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background: var(--case, var(--color-ink));
+    color: #fff;
+  }
+}
+
+@layer components {
+  .wrap {
+    @apply mx-auto w-full max-w-6xl px-6;
+  }
+
+  /* The only place the project colour carries meaning on its own is this rule,
+     which is decoration, so it never has to clear the 4.5:1 text threshold. */
+  .rule {
+    height: 6px;
+    background: var(--case, var(--color-ink));
+  }
+
+  .skip {
+    @apply sr-only;
+  }
+
+  .skip:focus {
+    @apply not-sr-only fixed left-4 top-4 z-50 rounded-sm bg-ink px-4 py-2 text-paper;
+  }
+
+  .link {
+    @apply underline decoration-line underline-offset-4 transition-colors hover:decoration-ink;
+  }
+
+  .label {
+    @apply text-xs font-bold uppercase tracking-[0.16em] text-muted;
+  }
+
+  .label::after {
+    content: "";
+    display: block;
+    width: 2.5rem;
+    height: 2px;
+    margin-top: 0.5rem;
+    background: var(--case, var(--color-ink));
+  }
+
+  .section {
+    @apply mt-16 max-w-2xl;
+  }
+
+  .prose-p {
+    @apply mt-4 text-lg leading-relaxed;
+  }
+
+  .prose-list {
+    @apply mt-4 space-y-3 text-lg leading-relaxed;
+  }
+
+  .prose-list > li {
+    @apply relative pl-6;
+  }
+
+  .prose-list > li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.72em;
+    width: 0.75rem;
+    height: 2px;
+    background: var(--case, var(--color-ink));
+  }
+
+  .focus-ring:focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 6px;
+  }
+
+  /* Superfícies com a paleta do currículo. Tudo dentro de .on-brand troca de
+     escala de cor de uma vez, em vez de repetir classe a classe no HTML. */
+  .on-brand {
+    background: var(--color-deep);
+    color: var(--color-lavender);
+  }
+
+  .on-brand :focus-visible,
+  .on-brand.focus-ring:focus-visible {
+    outline-color: var(--color-yellow);
+  }
+
+  .on-brand .label {
+    color: var(--color-yellow);
+  }
+
+  .on-brand .label::after {
+    background: var(--color-magenta);
+  }
+
+  .on-brand .link {
+    text-decoration-color: color-mix(in srgb, var(--color-lavender) 45%, transparent);
+  }
+
+  .on-brand .link:hover {
+    text-decoration-color: var(--color-yellow);
+  }
+
+  .on-brand .prose-list > li::before {
+    background: var(--color-aqua);
+  }
+
+  /* Não dá para redefinir text-muted ou border-line aqui: no Tailwind v4 a
+     camada utilities vence a camada components, independente de especificidade.
+     Dentro de .on-brand o HTML usa text-lavender e border-white/15 direto. */
+
+  /* Na home o cabeçalho fica fora da tela enquanto o hero ocupa o campo de visão.
+     Quem esconde é o JS, então sem JS ele simplesmente continua visível.
+     visibility: hidden tira os links do tab order, senão o foco sumiria de vista. */
+  .site-header {
+    transition: transform 220ms ease, opacity 220ms ease, visibility 220ms;
+  }
+
+  .site-header.is-hidden {
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-header {
+      transition: none;
+    }
+  }
+
+  /* Roxo do currículo, com o magenta entrando pelo canto inferior direito e um
+     resto de verde-água no alto, que é como o gradiente corre no PDF. */
+  .brand-gradient {
+    background:
+      radial-gradient(75% 115% at 112% 100%,
+        var(--color-magenta) 0%,
+        color-mix(in srgb, var(--color-magenta) 45%, transparent) 34%,
+        transparent 68%),
+      radial-gradient(45% 75% at 104% -5%,
+        color-mix(in srgb, var(--color-aqua) 50%, transparent) 0%,
+        transparent 62%),
+      linear-gradient(150deg,
+        color-mix(in srgb, var(--color-deep) 88%, black) 0%,
+        var(--color-deep) 62%,
+        color-mix(in srgb, var(--color-deep) 70%, var(--color-plum)) 100%);
+  }
+}
